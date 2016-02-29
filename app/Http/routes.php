@@ -15,11 +15,11 @@ Route::get('/', function () {
   return view('welcome');
 });
 
-Route::get('/user', function () {
-  return view('user');
+Route::get('/users', function () {
+  return view('users');
 });
 
-Route::resource('api/user', 'UserController', ['only' => ['index', 'store', 'update', 'destroy', 'show']]);
+Route::resource('api/users', 'UserController', ['only' => ['index', 'show', 'store', 'destroy']]);
 
 /*
   |--------------------------------------------------------------------------

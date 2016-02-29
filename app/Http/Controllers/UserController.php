@@ -2,42 +2,49 @@
 
 namespace App\Http\Controllers;
 
+use App\User;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-use App\User;
 use Illuminate\Http\Response;
 
 class UserController extends Controller {
 
   /**
-   * Display a listing of the resource.
-   *
-   * @return \Illuminate\Http\Response
+   * Responde con la lista de usuarios
+   * entra con GET en .../api/user 
+   * @return json array { users: [{...}, {...}, ...] } 
    */
-  public function index() {
-    return response()->json(User::all());
+  public function index(Request $request) {
+    return response()->json([ "users" => User::all()]);
   }
 
   /**
-   * Display the specified resource.
-   *
+   * Responde con un usuario
+   * entra con GET en .../api/user/{$id}
    * @param  int  $id
-   * @return \Illuminate\Http\Response
+   * @return json array { user: { ... } } 
    */
   public function show($id) {
-    return response()->json(User::find($id));
+    return response()->json(["user" => User::find($id)]);
   }
 
   /**
-   * Store a newly created resource in storage.
+   * Guardar un nuevo usuario, y si existe su id entonces actualizarlo.
    *
    * @param  \Illuminate\Http\Request  $request
    * @return \Illuminate\Http\Response
    */
   public function store(Request $request) {
-    User::create($request->all());
-    return ['created' => true];
+    //User::create($request->all());
+    if ($User = User::find($request->input('id'))) {
+      $User->update($request->all());
+      $status = "usuario actualizado";
+    } else {
+      User::create($request->all());
+      $status = "usuario creado";
+    }
+    return response()->json([ "users" => User::all(), "status" => $status]);
   }
 
   /**
@@ -48,9 +55,9 @@ class UserController extends Controller {
    * @return \Illuminate\Http\Response
    */
   public function update(Request $request, $id) {
-    $user = User::find($id);
-    $user->update($request->all());
-    return ['updated' => true];
+    //$user = User::find($id);
+    //$user->update($request->all());
+    return ['controller' => 'update'];
   }
 
   /**
@@ -61,7 +68,7 @@ class UserController extends Controller {
    */
   public function destroy($id) {
     User::destroy($id);
-    return ['deleted' => true];
+    return response()->json([ "users" => User::all(), "status" => "deleted user $id"]);
   }
 
 }
